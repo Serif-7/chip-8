@@ -28,11 +28,10 @@ decode
 
 */
 
-use minifb::{Key, Window, WindowOptions};
-use std::mem;
+use minifb::{Key, Window, WindowOptions, ScaleMode};
 
-const WIDTH: usize = 64;
-const HEIGHT: usize = 32;
+const WIDTH: usize = 320; //chip-8 was 64x32
+const HEIGHT: usize = 160;
 
 fn main() {
     //set up registers, stack, timers
@@ -59,14 +58,21 @@ fn main() {
         "CHIP-8",
         WIDTH,
         HEIGHT,
-        WindowOptions::default(),
+        WindowOptions {
+            resize: true,
+            scale_mode: ScaleMode::UpperLeft,
+            ..WindowOptions::default()
+        },
     )
-    .unwrap_or_else(|e| {
-            panic!("{}", e);
-    });
+    .expect("Unable to creat window");
 
-    //update display
-    window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
+    window.limit_update_rate(Some(std::time::Duration::from_micros(16600)));
+
+    while true {
+        
+        //update display
+        window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
+    }
     
     
 }

@@ -31,17 +31,17 @@ decode
 use minifb::{Key, Window, WindowOptions};
 use std::mem;
 
-const WIDTH = 64;
-const HEIGHT = 32;
+const WIDTH: usize = 64;
+const HEIGHT: usize = 32;
 
 fn main() {
     //set up registers, stack, timers
 
-    let pc: u12 = 0;
-    let index: u12 = 0;
-    let (V0, V1, V2, V3, V4, V5, V6, V7, V8, V9, VA, VB, VC, VD, VE, VF): u8 = 0;
+    let pc: u16 = 0;
+    let index: u16 = 0;
+    //let (V0, V1, V2, V3, V4, V5, V6, V7, V8, V9, VA, VB, VC, VD, VE, VF): u8 = 0;
 
-    let mut stack: u16 = Vec::new();
+    let mut stack: Vec<u16> = Vec::new();
 
     let mut sound_timer: u32 = 0;
     let mut delay_timer: u32 = 0;
@@ -53,6 +53,8 @@ fn main() {
 
     //initialize display
 
+    let mut buffer: Vec<u32> = vec![0; WIDTH * HEIGHT];
+
     let mut window = Window::new(
         "CHIP-8",
         WIDTH,
@@ -62,10 +64,9 @@ fn main() {
     .unwrap_or_else(|e| {
             panic!("{}", e);
     });
-    
-    
-}
 
-fn fetch() -> void {
+    //update display
+    window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
+    
     
 }

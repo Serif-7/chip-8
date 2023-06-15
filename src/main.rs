@@ -33,12 +33,31 @@ use minifb::{Key, Window, WindowOptions, ScaleMode};
 const WIDTH: usize = 320; //chip-8 was 64x32
 const HEIGHT: usize = 160;
 
+const PIXELW = 20;
+const PIXELH = 20;
+
 fn main() {
     //set up registers, stack, timers
 
     let pc: u16 = 0;
     let index: u16 = 0;
-    //let (V0, V1, V2, V3, V4, V5, V6, V7, V8, V9, VA, VB, VC, VD, VE, VF): u8 = 0;
+
+    let V0: u8 = 0;
+    let V1: u8 = 0;
+    let V2: u8 = 0;
+    let V3: u8 = 0;
+    let V4: u8 = 0;
+    let V5: u8 = 0;
+    let V6: u8 = 0;
+    let V7: u8 = 0;
+    let V8: u8 = 0;
+    let V9: u8 = 0;
+    let VA: u8 = 0; 
+    let VB: u8 = 0;
+    let VC: u8 = 0;
+    let VD: u8 = 0;
+    let VE: u8 = 0;
+    let VF: u8 = 0;
 
     let mut stack: Vec<u16> = Vec::new();
 
@@ -68,11 +87,51 @@ fn main() {
 
     window.limit_update_rate(Some(std::time::Duration::from_micros(16600)));
 
+    //main loop
     while true {
         
         //update display
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
+
+        //fetch
+        let b1: u8 = mem[pc];
+        let b2: u8 = mem[pc + 1]
+        pc += 2;
+
+        //decode
+        let n1: u8 = b1 >> 2;
+        let n2: u8 = b1 << 6;
+        n2 = n2 >> 6;
+        let n3: u8 = b2 >> 2
+        let n4: u8 = b2 << 6;
+        n4 = n4 >> 6;
+
+        let instr = (n1, n2, n3, n4);
+
+        //execute
+
+        match instr {
+
+            //clear screen
+            (0,0,0xE,0) => buffer = vec![0 ; WIDTH * HEIGHT],
+            (1, _, _, _) => pc = conv_to_u16(&instr),
+            
+            _ => panic!(),
+        }
+
+        
+        
     }
     
     
+}
+
+fn conv_to_u16(&instr) {
+    let addr: u16 = 0;
+    addr | instr.1;
+    addr << 2;
+    addr | instr.2;
+    addr << 2;
+    addr | instr.3;
+    return addr;
 }

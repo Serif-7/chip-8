@@ -33,8 +33,8 @@ use minifb::{Key, Window, WindowOptions, ScaleMode};
 const WIDTH: usize = 320; //chip-8 was 64x32
 const HEIGHT: usize = 160;
 
-const PIXELW: i32 = 20;
-const PIXELH: i32 = 20;
+const PIXELW: usize = 20;
+const PIXELH: usize = 20;
 
 fn main() {
     //set up registers, stack, timers
@@ -114,7 +114,7 @@ fn main() {
 
             //clear screen
             (0,0,0xE,0) => buffer = vec![0 ; WIDTH * HEIGHT],
-            (1, _, _, _) => pc = conv_to_addr(&instr),
+            (1, _, _, _) => pc = conv_to_addr(&instr) as usize,
             
             _ => panic!(),
         }
@@ -127,8 +127,8 @@ fn main() {
 }
 
 //pc has to be a usize
-fn conv_to_addr(instr: &(u8, u8, u8, u8)) -> usize {
-    let addr: usize = 0;
+fn conv_to_addr(instr: &(u8, u8, u8, u8)) -> u16 {
+    let addr: u16 = 0;
     addr | instr.1;
     addr << 2;
     addr | instr.2;

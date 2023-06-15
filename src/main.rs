@@ -33,13 +33,13 @@ use minifb::{Key, Window, WindowOptions, ScaleMode};
 const WIDTH: usize = 320; //chip-8 was 64x32
 const HEIGHT: usize = 160;
 
-const PIXELW = 20;
-const PIXELH = 20;
+const PIXELW: i32 = 20;
+const PIXELH: i32 = 20;
 
 fn main() {
     //set up registers, stack, timers
 
-    let pc: u16 = 0;
+    let pc: usize = 0;
     let index: u16 = 0;
 
     let V0: u8 = 0;
@@ -88,21 +88,21 @@ fn main() {
     window.limit_update_rate(Some(std::time::Duration::from_micros(16600)));
 
     //main loop
-    while true {
+    loop {
         
         //update display
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
 
         //fetch
         let b1: u8 = mem[pc];
-        let b2: u8 = mem[pc + 1]
+        let b2: u8 = mem[pc + 1];
         pc += 2;
 
         //decode
         let n1: u8 = b1 >> 2;
         let n2: u8 = b1 << 6;
         n2 = n2 >> 6;
-        let n3: u8 = b2 >> 2
+        let n3: u8 = b2 >> 2;
         let n4: u8 = b2 << 6;
         n4 = n4 >> 6;
 
@@ -114,7 +114,7 @@ fn main() {
 
             //clear screen
             (0,0,0xE,0) => buffer = vec![0 ; WIDTH * HEIGHT],
-            (1, _, _, _) => pc = conv_to_u16(&instr),
+            (1, _, _, _) => pc = conv_to_addr(&instr),
             
             _ => panic!(),
         }
@@ -126,8 +126,9 @@ fn main() {
     
 }
 
-fn conv_to_u16(&instr) {
-    let addr: u16 = 0;
+//pc has to be a usize
+fn conv_to_addr(instr: &(u8, u8, u8, u8)) -> usize {
+    let addr: usize = 0;
     addr | instr.1;
     addr << 2;
     addr | instr.2;
